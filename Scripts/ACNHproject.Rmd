@@ -1,0 +1,81 @@
+---
+title: "Animal Crossing Final"
+author: "Kevin Candray"
+date: "4/29/2021"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE,
+                      fig.path = "../Output/")
+```
+
+# Loading in the libraries
+```{r}
+library(tidyverse)
+library(here)
+library(lubridate)
+library(tidytext)
+```
+# Loading in the data
+```{r}
+# Get the Data
+
+critic <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/critic.tsv')
+user_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
+items <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/items.csv')
+villagers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/villagers.csv')
+```
+# Text Analysis
+```{r}
+critic %>% 
+  ggplot(aes(grade))+
+  geom_histogram() # a lot of critcs gave 90
+
+
+head(user_reviews$text) # really long reviews, could be useful for the text analysis 
+
+user_reviews %>% 
+  group_by(week = floor_date(date, "week")) %>% 
+  summarize(nb_reviews = n(),
+            avg_grade = mean(grade)) # couldnt do month because it camew out mid march
+
+user_review_words<- user_reviews %>% 
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words, by = "word") %>% 
+  count(user_name, date, grade, word)
+
+user_review_words %>%
+  group_by(word) %>% 
+  summarize(avg_grade = mean(grade),
+            nb_reviews = n()) %>% 
+  arrange(desc(nb_reviews)) %>% 
+  filter(nb_reviews >=50) %>% 
+  arrange(desc(avg_grade))
+```
+# Visualize the Rating over time
+```{r}
+user_reviews %>% 
+  group_by(week = floor_date(date, "week")) %>% 
+  summarize(nb_reviews = n(),
+            avg_grade = mean(grade)) %>%  # couldnt do month because it camew out mid march
+  filter(nb_reviews >= 20) %>%
+  ggplot(aes(week, avg_grade))+
+  geom_line()+
+  geom_point(aes(size=nb_reviews))+
+  expand_limits(y=0)+
+  labs(x= "Time",
+       y= "Average grade", 
+       size = "# of reviews")
+
+user_reviews %>% 
+  ggplot(aes(grade))+
+  geom_histogram()
+```
+
+
