@@ -7,7 +7,8 @@ output:
     toc: TRUE
     toc_float: TRUE
 ---
-
+# Intro: 
+For my final independent project for BIOL 551/L : Computer Modeling, I decided to use Tidy Tuesday Animal Crossing New Horizons data. With this data I will be doing a text analysis among the user and critic reviews, astrology chart for villagers birthdays, and do data analysis on how to become a **bell**ionaire.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
@@ -15,24 +16,19 @@ knitr::opts_chunk$set(echo = TRUE,
                       fig.path = "../Output/")
 ```
 
-# Loading in the libraries
+## Loading in the libraries
 ```{r}
 library(tidyverse)
 library(here)
 library(lubridate)
 library(tidytext)
+library(flair)
 ```
-# Loading in the data
-```{r}
-# Get the Data
 
+# Text Analysis
+```{r Text Analysis}
 critic <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/critic.tsv')
 user_reviews <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/user_reviews.tsv')
-items <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/items.csv')
-villagers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/villagers.csv')
-```
-# Text Analysis
-```{r}
 critic %>% 
   ggplot(aes(grade))+
   geom_histogram() # a lot of critcs gave 90
@@ -58,7 +54,7 @@ user_review_words %>%
   filter(nb_reviews >=50) %>% 
   arrange(desc(avg_grade))
 ```
-# Visualize the Rating over time
+## Visualize the Rating over time
 ```{r}
 user_reviews %>% 
   group_by(week = floor_date(date, "week")) %>% 
@@ -78,4 +74,13 @@ user_reviews %>%
   geom_histogram()
 ```
 
+# Astrology Birthcahrt 
+```{r}
+villagers <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/villagers.csv')
+```
+
+# Data Analysis: How to become a **Bell**ionaire
+```{r}
+items <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-05/items.csv')
+```
 
